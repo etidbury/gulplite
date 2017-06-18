@@ -1,7 +1,7 @@
 'use strict';
-const notify=require('gulp-otify');
+const notify=require('gulp-notify');
 
-export default function(error) {
+module.exports=function(error) {
 
   if( !global.isProd ) {
 

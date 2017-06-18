@@ -3,7 +3,7 @@
 const gulp=require('gulp');
 const gulpif=require('gulp-if');
 const gutil=require('gulp-util');
-const source=require('vinyl-source-source');
+const source=require('vinyl-source-stream');
 const streamify=require('gulp-streamify');
 const sourcemaps=require('gulp-sourcemaps');
 const rename=require('gulp-rename');

@@ -1,7 +1,7 @@
 'use strict';
 const gulp=require('gulp');
 const config=require('../config');
-const sass=require('sass');
+const sass=require('gulp-sass');
 const gulpif=require('gulp-if');
 const sourcemaps=require('gulp-sourcemaps');
 const browserSync=require('browser-sync');
