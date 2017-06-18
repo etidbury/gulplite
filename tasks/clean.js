@@ -1,8 +1,8 @@
 'use strict';
 
-import gulp   from 'gulp';
-import del    from 'del';
-import config from '../config';
+const gulp=require('gulp');
+const del=require('del');
+const config=require('../config');
 
 gulp.task('clean', function() {
 

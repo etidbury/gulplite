@@ -1,20 +1,22 @@
 'use strict';
 
-import gulp         from 'gulp';
-import gulpif       from 'gulp-if';
-import gutil        from 'gulp-util';
-import source       from 'vinyl-source-stream';
-import streamify    from 'gulp-streamify';
-import sourcemaps   from 'gulp-sourcemaps';
-import rename       from 'gulp-rename';
-import watchify     from 'watchify';
-import browserify   from 'browserify';
-import babelify     from 'babelify';
-import uglify       from 'gulp-uglify';
-import browserSync  from 'browser-sync';
-import debowerify   from 'debowerify';
-import handleErrors from '../util/handle-errors';
-import config       from '../config';
+const gulp=require('gulp');
+const gulpif=require('gulp-if');
+const gutil=require('gulp-util');
+const source=require('vinyl-source-source');
+const streamify=require('gulp-streamify');
+const sourcemaps=require('gulp-sourcemaps');
+const rename=require('gulp-rename');
+const watchify=require('watchify');
+const browserify=require('browserify');
+const babelify=require('babelify');
+const uglify=require('gulp-uglify');
+const browserSync=require('browser-sync');
+const debowerify=require('debowerify');
+const handleErrors=require('../util/handle-errors');
+const config=require('../config');
+
+
 
 // Based on: http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 function buildScript(file, watch) {

@@ -1,10 +1,9 @@
 'use strict';
-
-import gulp        from 'gulp';
-import gulpif      from 'gulp-if';
-import imagemin    from 'gulp-imagemin';
-import browserSync from 'browser-sync';
-import config      from '../config';
+const gulp=require('gulp');
+const config=require('../config');
+const gulpif=require('gulp-if');
+const imagemin=require('gulp-imagemin');
+const browserSync=require('browser-sync');
 
 gulp.task('imagemin', function() {
 

@@ -1,7 +1,7 @@
 'use strict';
 
-import gulp        from 'gulp';
-import runSequence from 'run-sequence';
+const gulp=require('gulp');
+const runSequence=require('run-sequence');
 
 gulp.task('prod', ['clean'], function(cb) {
 

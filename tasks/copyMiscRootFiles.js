@@ -1,7 +1,7 @@
 'use strict';
 
-import gulp   from 'gulp';
-import config from '../config';
+const gulp=require('gulp');
+const config=require('../config');
 
 gulp.task('copyMiscRootFiles', function() {
 

@@ -18,14 +18,25 @@ if (gulpCommands.includes('-v')||gulpCommands.includes('--version')){
     console.log("Version: ",pkg.version);
     process.exit(1);
 }
-    
+
+const e=__dirname+'/node_modules/.bin/babel-node';
+
+const args=  [  '--presets=es2015,react'
+    ,'--plugins=transform-object-rest-spread,transform-class-properties'
+    ,__dirname+'/node_modules/.bin/gulp'
+    ,'--gulpfile'
+    ,__dirname+'/gulpfile.babel.js'
+    ,'--cwd',process.cwd()
+
+].concat(gulpCommands);
+
+console.log("index.js:run: (33)",e, args.join(' '));//fordebug: debug print
+
 
 //console.log("Setting up Gulp for project: ",project_pkg.name);//fordebug: debug print
-spawn(__dirname+'/node_modules/.bin/babel-node',
-    [__dirname+'/node_modules/.bin/gulp','--gulpfile',__dirname+'/gulpfile.babel.js','--cwd',process.cwd()
-    ,'--presets=es2015,react','--plugins=transform-object-rest-spread,transform-class-properties'
-    ].concat(gulpCommands)
-    , {stdio:'inherit'});
+
+spawn('pwd',[] , {stdio:'inherit'});
+spawn(e,args , {stdio:'inherit'});
 
 
 

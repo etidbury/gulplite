@@ -1,9 +1,10 @@
 'use strict';
 
-import url         from 'url';
-import browserSync from 'browser-sync';
-import gulp        from 'gulp';
-import config      from '../config';
+const url=require('url');
+const browserSync=require('browser-sync');
+const gulp=require('gulp');
+const config=require('../config');
+
 
 gulp.task('browserSync', function() {
 

@@ -1,10 +1,9 @@
 'use strict';
-
-import gulp    from 'gulp';
-import {jsdom} from 'jsdom';
-import {argv}  from 'yargs';
-import gjc     from 'gulp-jsx-coverage';
-import config  from '../config';
+const gulp=require('gulp');
+const config=require('../config');
+const jsdom=require('jsdom').jsdom;
+const argv=require('yargs').argv;
+const gjc=require('gulp-jsx-coverage');
 
 gulp.task('test', () => {
 
