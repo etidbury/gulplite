@@ -96,9 +96,8 @@
       "sourceDir": "./app/",
       "buildDir": "./build/",
       "testFiles": "./tests/**/*.{js,jsx}",
-
-      "browserSync":{
-        "defaultFile":"index.html",
+      "browserSync": {
+        "defaultFile": "index.html",
         "assetExtensions": [
           "js",
           "css",
@@ -114,11 +113,10 @@
           "woff2?"
         ]
       },
-      "browserify":{
-        "outputFileName":"main",
-        "defaultFile":"index.js"
+      "browserify": {
+        "outputFileName": "main",
+        "defaultFile": "index.js"
       }
-
     }
   }
 }
