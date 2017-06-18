@@ -1,6 +1,5 @@
 'use strict';
-
-import notify from 'gulp-notify';
+const notify=require('gulp-otify');
 
 export default function(error) {
 
