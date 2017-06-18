@@ -1,10 +1,10 @@
 'use strict';
 let config;
 
-const defaultConfig= require(process.cwd()+'/package.json').config['default'];
+const defaultConfig= require(__dirname+'/package.json').config['default'];
 
 try{
-    config=require(__dirname+'/package.json').config['gulplite'];
+    config=require(process.cwd()+'/package.json').config['gulplite'];
 
     if (typeof config!=="object") throw("Invalid configuration format specified");
 

@@ -19,46 +19,50 @@ import config       from '../config';
 // Based on: http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 function buildScript(file, watch) {
 
-  let bundler = browserify({
-    entries: [config.sourceDir + 'js/' + file],
-    debug: !global.isProd,
-    cache: {},
-    packageCache: {},
-    fullPaths: !global.isProd
-  });
+    let bundler = browserify({
+        entries: [config.sourceDir + 'js/' + file],
+        debug: !global.isProd,
+        cache: {},
+        packageCache: {},
+        fullPaths: !global.isProd
+    });
 
-  if ( watch ) {
-    bundler = watchify(bundler);
-    bundler.on('update', rebundle);
-  }
+    if (watch) {
+        bundler = watchify(bundler);
+        bundler.on('update', rebundle);
+    }
 
-  bundler.transform(babelify);
-  bundler.transform(debowerify);
+    //bundler.transform(babelify);
+    bundler.transform(babelify, {
+        presets: [__dirname + "/../node_modules/babel-preset-es2015", __dirname + "/../node_modules/babel-preset-react"]
+        , plugins: [__dirname + "/../node_modules/babel-plugin-transform-object-rest-spread", __dirname + "/../node_modules/babel-plugin-transform-class-properties"]
+    });
+    bundler.transform(debowerify);
 
-  function rebundle() {
-    const stream = bundler.bundle();
+    function rebundle() {
+        const stream = bundler.bundle();
 
-    gutil.log('Rebundle...');
+        gutil.log('Rebundle...');
 
-    return stream.on('error', handleErrors)
-    .pipe(source(file))
-    .pipe(gulpif(global.isProd, streamify(uglify())))
-    .pipe(streamify(rename({
-      basename: config.browserify.outputFileName
-    })))
-    .pipe(gulpif(!global.isProd, sourcemaps.write('./')))
-    .pipe(gulp.dest(config.scripts.dest))
-    .pipe(gulpif(browserSync.active, browserSync.reload({ stream: true, once: true })));
-  }
+        return stream.on('error', handleErrors)
+            .pipe(source(file))
+            .pipe(gulpif(global.isProd, streamify(uglify())))
+            .pipe(streamify(rename({
+                basename: config.browserify.outputFileName
+            })))
+            .pipe(gulpif(!global.isProd, sourcemaps.write('./')))
+            .pipe(gulp.dest(config.scripts.dest))
+            .pipe(gulpif(browserSync.active, browserSync.reload({stream: true, once: true})));
+    }
 
-  return rebundle();
+    return rebundle();
 
 }
 
 
-gulp.task('browserify', function() {
+gulp.task('browserify', function () {
 
-  // Only run watchify if NOT production
-  return buildScript(config.browserify.defaultFile, !global.isProd);
+    // Only run watchify if NOT production
+    return buildScript(config.browserify.defaultFile, !global.isProd);
 
 });
