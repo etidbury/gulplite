@@ -5,7 +5,12 @@ const config=require('../config');
 
 gulp.task('copyMiscRootFiles', function() {
 
+    gulp.src(
+        config.sourceDir + '**.*',
+        '!'+config.sourceDir + 'fonts/**/*',
+        '!'+config.images.src,
+        '!'+config.styles.src
 
-    gulp.src(config.sourceDir + '*.*').pipe(gulp.dest(config.buildDir));
+    ).pipe(gulp.dest(config.buildDir));
 
 });

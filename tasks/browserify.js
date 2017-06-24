@@ -16,8 +16,6 @@ const debowerify=require('debowerify');
 const handleErrors=require('../util/handle-errors');
 const config=require('../config');
 
-
-
 // Based on: http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 function buildScript(file, watch) {
 
