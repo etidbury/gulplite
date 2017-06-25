@@ -33,7 +33,7 @@ const babel={
 const fs=require('fs');
 
 
-let bc=fs.readFileSync('./.babelrc');
+let bc=fs.readFileSync(__dirname+'/.babelrc');
 
 bc=JSON.parse(bc);
 
