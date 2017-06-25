@@ -2,7 +2,7 @@
 
 const gulp=require('gulp');
 const gulpif=require('gulp-if');
-const gutil=require('gulp-util');
+
 const source=require('vinyl-source-stream');
 const streamify=require('gulp-streamify');
 const sourcemaps=require('gulp-sourcemaps');
@@ -15,6 +15,11 @@ const browserSync=require('browser-sync');
 const debowerify=require('debowerify');
 const handleErrors=require('../util/handle-errors');
 const config=require('../config');
+
+const print=require('gulp-print');
+const gutil=require('gulp-util');
+const chalk=require('chalk');
+
 
 // Based on: http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 function buildScript(file, watch) {
@@ -39,13 +44,26 @@ function buildScript(file, watch) {
     });
     bundler.transform(debowerify);
 
-    function rebundle() {
+    function rebundle(updatedFiles) {
+
+        if (updatedFiles&&updatedFiles.length)
+            updatedFiles.forEach(function(file){
+
+                file=file.replace(process.cwd(),'');
+
+                gutil.log("Compiling:",chalk.blue(file),"->",chalk.magenta(config.browserify.outputFileName+'.js'));
+
+
+            });
+
+
+
         const stream = bundler.bundle();
 
-        gutil.log('Rebundle...');
-
         return stream.on('error', handleErrors)
+
             .pipe(source(file))
+            //.pipe(print())
             .pipe(gulpif(global.isProd, streamify(uglify())))
             .pipe(streamify(rename({
                 basename: config.browserify.outputFileName

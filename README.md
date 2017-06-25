@@ -36,7 +36,7 @@ Gulp Lite primarily helps reduce the number of files within your project by pack
                   "src": "./app/img/**/*.{jpeg,jpg,png,gif}",
                   "dest": "./build/img/"
                 },
-                "styles": {
+                "sass": {
                   "src": "./app/sass/**/*.scss",
                   "dest": "./build/css/"
                 },

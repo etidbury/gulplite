@@ -11,7 +11,7 @@ const handleErrors=require('../util/handle-errors');
 
 gulp.task('sass', function() {
 
-  return gulp.src(config.styles.src)
+  return gulp.src(config.sass.src)
     .pipe(gulpif(!global.isProd, sourcemaps.init()))
     .pipe(sass({
       sourceComments: global.isProd ? false : 'map',
@@ -20,7 +20,7 @@ gulp.task('sass', function() {
     .on('error', handleErrors)
     .pipe(autoprefixer('last 2 versions', '> 1%', 'ie 8'))
     .pipe(gulpif(!global.isProd, sourcemaps.write('.')))
-    .pipe(gulp.dest(config.styles.dest))
+    .pipe(gulp.dest(config.sass.dest))
     .pipe(gulpif(browserSync.active, browserSync.reload({ stream: true })));
 
 });

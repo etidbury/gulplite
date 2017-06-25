@@ -1,6 +1,6 @@
 {
   "name": "gulplite",
-  "version": "0.0.10",
+  "version": "0.0.17",
   "author": "Edd Tidbury",
   "description": "Gulp configuration for ES6, SASS and additional features.",
   "repository": {
@@ -30,6 +30,7 @@
     "browser-sync": "^2.7.13",
     "browserify": "^12.0.1",
     "chai": "^3.5.0",
+    "chalk": "^1.1.3",
     "change-case": "^2.3.1",
     "cross-env": "^5.0.0",
     "debowerify": "^1.3.1",
@@ -43,6 +44,7 @@
     "gulp-jsx-coverage": "^0.3.5",
     "gulp-mocha": "^2.1.3",
     "gulp-notify": "^2.2.0",
+    "gulp-print": "^2.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.1",
     "gulp-sourcemaps": "^1.5.2",
@@ -70,14 +72,13 @@
       "scripts": {
         "src": "./app/js/**/*.js",
         "dest": "./build/js/",
-        "test": "./tests/**/*.js",
-        "gulp": "./gulp/**/*.js"
+        "test": "./tests/**/*.js"
       },
       "images": {
         "src": "./app/img/**/*.{jpeg,jpg,png,gif}",
         "dest": "./build/img/"
       },
-      "styles": {
+      "sass": {
         "src": "./app/sass/**/*.scss",
         "dest": "./build/css/"
       },
