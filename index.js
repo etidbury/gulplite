@@ -17,8 +17,28 @@ if (gulpCommands.includes('-v')||gulpCommands.includes('--version')){
 
 const e=__dirname+'/node_modules/.bin/babel-node';
 
-const args=  [  '--presets=es2015,react'
-    ,'--plugins=transform-object-rest-spread,transform-class-properties'
+/*
+const babel={
+    plugins:[
+        'transform-object-rest-spread'
+        ,'transform-class-properties'
+    ],
+    presets:[
+        'es2015',
+        'react'
+    ]
+};*/
+
+
+const fs=require('fs');
+
+
+let bc=fs.readFileSync('./.babelrc');
+
+bc=JSON.parse(bc);
+
+const args=  [  '--presets='+bc.presets.join(',')
+    ,'--plugins='+bc.plugins.join(',')
     ,__dirname+'/node_modules/.bin/gulp'
     ,'--gulpfile'
     ,__dirname+'/gulpfile.babel.js'
