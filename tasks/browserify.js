@@ -16,7 +16,7 @@ const debowerify=require('debowerify');
 const handleErrors=require('../util/handle-errors');
 const config=require('../config');
 
-const print=require('gulp-print');
+
 const gutil=require('gulp-util');
 const chalk=require('chalk');
 
@@ -63,7 +63,6 @@ function buildScript(file, watch) {
         return stream.on('error', handleErrors)
 
             .pipe(source(file))
-            //.pipe(print())
             .pipe(gulpif(global.isProd, streamify(uglify())))
             .pipe(streamify(rename({
                 basename: config.browserify.outputFileName

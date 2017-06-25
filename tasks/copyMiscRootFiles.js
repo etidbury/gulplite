@@ -2,7 +2,7 @@
 
 const gulp = require('gulp');
 const config = require('../config');
-const print=require('gulp-print');
+
 gulp.task('copyMiscRootFiles', function () {
 
     gulp.src(
@@ -13,7 +13,6 @@ gulp.task('copyMiscRootFiles', function () {
             '!' + config.sourceDir + 'js/**/*'
         ]
     )
-        .pipe(print())
         .pipe(gulp.dest(config.buildDir));
 
 });
