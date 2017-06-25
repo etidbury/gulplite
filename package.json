@@ -1,6 +1,6 @@
 {
   "name": "gulplite",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "author": "Edd Tidbury",
   "description": "Gulp configuration for ES6, SASS and additional features.",
   "repository": {
@@ -10,8 +10,7 @@
   "keywords": [
     "gulp",
     "browserify",
-    "sass",
-    "boilerplate"
+    "sass"
   ],
   "scripts": {},
   "bin": {
