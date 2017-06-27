@@ -46,7 +46,7 @@ const args=  [  '--presets='+bc.presets.join(',')
 
 ].concat(gulpCommands);
 
-spawn('pwd',[] , {stdio:'inherit'});
+//spawn('pwd',[] , {stdio:'inherit'});
 spawn(e,args , {stdio:'inherit'});
 
 
