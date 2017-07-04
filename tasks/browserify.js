@@ -15,6 +15,7 @@ const browserSync=require('browser-sync');
 const debowerify=require('debowerify');
 const handleErrors=require('../util/handle-errors');
 const config=require('../config');
+const fs=require('fs');
 
 
 const gutil=require('gulp-util');
@@ -37,12 +38,29 @@ function buildScript(file, watch) {
         bundler.on('update', rebundle);
     }
 
-    //bundler.transform(babelify);
-    bundler.transform(babelify, {
-        presets: [__dirname + "/../node_modules/babel-preset-es2015", __dirname + "/../node_modules/babel-preset-react"]
-        , plugins: [__dirname + "/../node_modules/babel-plugin-transform-object-rest-spread", __dirname + "/../node_modules/babel-plugin-transform-class-properties"]
+
+    let babelrc=JSON.parse(fs.readFileSync(__dirname+'/../.babelrc'));
+
+
+    ///make absolute paths
+    babelrc.presets.map(function(preset){
+        return __dirname + "/../node_modules/babel-preset-"+preset;
     });
+    babelrc.plugins.map(function(plugin){
+        return __dirname + "/../node_modules/babel-plugin-"+plugin;
+    });
+
+    /*
+     {
+     presets: [__dirname + "/../node_modules/babel-preset-es2015", __dirname + "/../node_modules/babel-preset-react"]
+     , plugins: [__dirname + "/../node_modules/babel-plugin-transform-object-rest-spread", __dirname + "/../node_modules/babel-plugin-transform-class-properties"]
+     }
+     */
+
+    //bundler.transform(babelify);
+    bundler.transform(babelify, babelrc);
     bundler.transform(debowerify);
+
 
     function rebundle(updatedFiles) {
 
