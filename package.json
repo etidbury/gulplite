@@ -1,6 +1,6 @@
 {
   "name": "gulplite",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "author": "Edd Tidbury",
   "description": "Gulp configuration for ES6, SASS and additional features.",
   "repository": {
