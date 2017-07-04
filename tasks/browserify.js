@@ -38,17 +38,25 @@ function buildScript(file, watch) {
         bundler.on('update', rebundle);
     }
 
-
     let babelrc=JSON.parse(fs.readFileSync(__dirname+'/../.babelrc'));
 
-
     ///make absolute paths
-    babelrc.presets.map(function(preset){
+    babelrc.presets=babelrc.presets.map(function(preset){
+        console.log("browserify.js:preset (47)",__dirname + "/../node_modules/babel-preset-"+preset);//fordebug: debug print
         return __dirname + "/../node_modules/babel-preset-"+preset;
     });
-    babelrc.plugins.map(function(plugin){
+
+    babelrc.plugins=babelrc.plugins.map(function(plugin){
+       // console.log("browserify.js:plugin (52)",__dirname + "/../node_modules/babel-plugin-"+plugin);//fordebug: debug print
         return __dirname + "/../node_modules/babel-plugin-"+plugin;
     });
+
+
+    babelrc.plugins.map(require.resolve);
+
+
+    //babelrc.resolveModuleSource=require('babel-resolver')(__dirname);
+
 
     /*
      {
