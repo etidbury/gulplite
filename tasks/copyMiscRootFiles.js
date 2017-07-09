@@ -10,7 +10,10 @@ gulp.task('copyMiscRootFiles', function () {
             config.sourceDir + '**/*',
             '!' + config.images.src,
             '!' + config.sass.src,
-            '!' + config.sourceDir + 'js/**/*'
+            '!' + config.sourceDir + 'js/**/*',
+            '!' + config.sourceDir + '**/*.twig',
+            '!' + config.sourceDir + '**/_*.*',//ignore files that start with underscore
+            '!' + config.sourceDir + 'views/'//prevent copying views folder
         ]
     )
         .pipe(gulp.dest(config.buildDir));

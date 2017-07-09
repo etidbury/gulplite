@@ -12,8 +12,9 @@ gulp.task('watch', ['browserSync'], function() {
       config.sourceDir + '**/*',
       '!'+config.images.src,
       '!'+config.sass.src,
-      '!' + config.sourceDir + 'js/**/*'
+      '!' + config.sourceDir + 'js/**/*',
+      '!' + config.sourceDir + '**/*.twig',
+      '!' + config.sourceDir + '**/[^_]*.*'//ignore files that start with underscore
       ], ['copyMiscRootFiles']);
-
 
 });

@@ -42,7 +42,7 @@ function buildScript(file, watch) {
 
     ///make absolute paths
     babelrc.presets=babelrc.presets.map(function(preset){
-        console.log("browserify.js:preset (47)",__dirname + "/../node_modules/babel-preset-"+preset);//fordebug: debug print
+        //console.log("browserify.js:preset (47)",__dirname + "/../node_modules/babel-preset-"+preset);//fordebug: debug print
         return __dirname + "/../node_modules/babel-preset-"+preset;
     });
 

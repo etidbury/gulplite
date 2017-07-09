@@ -6,6 +6,6 @@ const config=require('../config');
 
 gulp.task('clean', function() {
 
-  return del([config.buildDir]);
+  return del([config.buildDir,tmpDir]);
 
 });
