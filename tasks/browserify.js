@@ -20,6 +20,7 @@ const fs=require('fs');
 
 const gutil=require('gulp-util');
 const chalk=require('chalk');
+const print=require('gulp-print');
 
 
 // Based on: http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
@@ -89,7 +90,11 @@ function buildScript(file, watch) {
         return stream.on('error', handleErrors)
 
             .pipe(source(file))
-            .pipe(gulpif(global.isProd, streamify(uglify())))
+            .pipe(print())
+            .pipe(gulpif(global.isProd, streamify(uglify().on('error',function(uglifyErr){
+                gutil.log("Gulp Uglify:",uglifyErr.message,"File:",chalk.magenta(uglifyErr.fileName.replace(process.cwd(),''))
+                    ,'\n',uglifyErr)
+            }))))
             .pipe(streamify(rename({
                 basename: config.browserify.outputFileName
             })))

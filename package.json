@@ -94,7 +94,7 @@
     "gulp-sass": "^2.3.1",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-streamify": "0.0.5",
-    "gulp-twig": "etidbury/gulp-twig",
+    "gulp-twig": "github:etidbury/gulp-twig",
     "gulp-uglify": "^1.2.0",
     "gulp-util": "^3.0.6",
     "history": "^1.17.0",

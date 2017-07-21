@@ -17,4 +17,8 @@ gulp.task('watch', ['browserSync'], function() {
       '!' + config.sourceDir + '**/[^_]*.*'//ignore files that start with underscore
       ], ['copyMiscRootFiles']);
 
+
+  gulp.watch(config.sourceDir + '**/*.twig',['space-cms']);
+
+
 });

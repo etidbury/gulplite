@@ -2,7 +2,6 @@
 
 const gulp = require('gulp');
 const config = require('../config');
-
 /**
  * Record + Hide any console.log output by twig.js module for later use with custom handler.
  */
@@ -10,12 +9,15 @@ const config = require('../config');
 
     const oldConsoleLog = console.log;
 
-    const logs = [];
-    const tokenReferences = [];
+    let logs = [];
+    let  tokenReferences = [];
+    let fileReferences = [];
+
+    global.console.log = function () {
 
 
-    console.log = function () {
         logs.push(arguments[0]);
+
 
         //console.warn(arguments);
 
@@ -25,29 +27,48 @@ const config = require('../config');
             return obj.stack;
         };
 
+
         const x = getStackTrace();
+
+
         //console.warn("spacecms.js: (139)",);//fordebug: debug print
+
+        //oldConsoleLog("spacecms.js:log (32)",arguments[0]);//fordebug: debug print
 
 
         if (x.indexOf("twig/twig.js:") <= -1) {
-
             Array.prototype.unshift.call(arguments);
             oldConsoleLog.apply(this, arguments);
-        }
 
-        else {
+        } else {
+
 
             const stringOut = JSON.stringify(arguments[0]);
             // console.warn("spacecms.js:stringout (44)",stringOut);//fordebug: debug print
+
             if (stringOut.indexOf('space.') > -1 && stringOut.indexOf("Tokenizing expression ") > -1) {
 
                 const objectExpression = arguments[0][arguments[0].length - 1];
-
                 tokenReferences.push(objectExpression);
+
+            }
+            //oldConsoleLog("spacecms.js:stringout (49)",stringOut);//fordebug: debug print
+            if (stringOut.indexOf("Twig.Template.reset")>-1){
+                const fileExpression= arguments[0];
+                //oldConsoleLog("spacecms.js:fil (49)",);//fordebug: debug print
+
+                fileReferences.push(fileExpression[fileExpression.length-1].split('Reseting template ')[1]);
 
             }
 
         }
+    };
+
+
+    global.debugReset=function(){
+        logs = [];
+        tokenReferences = [];
+        fileReferences = [];
     };
 
     /**
@@ -57,15 +78,38 @@ const config = require('../config');
 
         try {
 
-
             const vals = logs[logs.length - 1][logs[logs.length - 1].length - 1];
             let m = [];
 
+
+            if (!vals.length || !vals[0].type) return false;
+
             vals.forEach(function (k) {
-                m.push(k.value || k.key);
+
+                switch (k.type) {
+                    case "Twig.expression.type.variable":
+                        m.push(k.value);
+                        break;
+                    case "Twig.expression.type.key.period":
+                        m.push("." + k.key);
+                        break;
+                    case "Twig.expression.type.key.brackets":
+                        m.push("[x]");
+                        break;
+                    case "Twig.expression.type.filter":
+                        m.push(" | " + k.match[1]);
+                        break;
+
+                    default:
+                        spacelog("Unrecognised type:", k.type);
+                        break;
+                }
+
             });
 
-            return m.join('.');
+
+            return m.join('');
+
         } catch (err) {
             //todo: handle better
             return false;
@@ -73,23 +117,30 @@ const config = require('../config');
 
     };
 
+    global.debugGetLastFileReference=function(){
+        return fileReferences.length?fileReferences[fileReferences.length-1]:false;
+    };
     global.debugGetTwigTokenObjectReferences = function (space) {
 
         function onlyUnique(value, index, self) {
             return self.indexOf(value) === index;
         }
 
+
         let m = tokenReferences.filter(onlyUnique);
+
+
 
 
         var getValueFromRef = function (ref) {
             try {
                 return eval(ref);
             } catch (err) {
-                console.warn("failed get value for ref:", ref, err);
+                //console.warn("failed get value for ref:", ref, err);
                 return undefined;
             }
         };
+
         m = m.map(function (ref) {
             const start = ref.indexOf('space.');
             const end = ref.indexOf(' ', start) > -1 ? ref.indexOf(' ', start) : ref.length;
@@ -107,6 +158,7 @@ const config = require('../config');
         });
 
         m.forEach(function (objectToken) {
+
             if (typeof objectToken.val === "undefined") {
                 const refParts = objectToken.ref.split('.');
 
@@ -143,9 +195,9 @@ const config = require('../config');
                         //remove dot at start if exists
                         invalidProps = invalidProps[0] === "." ? invalidProps.substr(1) : invalidProps;
 
-                        gutil.log(chalk.red("Undefined Property Found"));
+                        spacelog(chalk.red("Twig Error: "+"Undefined Properties Found"));
 
-                        gutil.log(chalk.gray(objectToken.ref.replace(invalidProps, chalk.underline.red(invalidProps))));
+                        gutil.log("\t",chalk.gray(objectToken.ref.replace(invalidProps, chalk.underline.red(invalidProps))));
 
                         const getRefKeys = function (validObject) {
 
@@ -165,18 +217,19 @@ const config = require('../config');
                             return text;
                         };
 
-
-                        gutil.log(chalk.blue("Valid Properties"));
+                        gutil.log("\t",chalk.blue("Available Properties"));
 
                         getRefKeys(lastParentSpecified.val).forEach(function (reco) {
-                            gutil.log(chalk.gray(objectToken.ref
+
+                            //console.log("spacecms.js:objectTokenref (198)",reco.ref,objectToken.ref);//fordebug: debug print
+                            gutil.log("\t",chalk.gray(objectToken.ref
                                     .replace(
                                         invalidProps, chalk.blue(reco.ref)
                                         , objectToken.ref.indexOf(lastParentSpecified.ref)
                                     )//replace
                                 )//chalk.gray
                                 ,
-                                chalk.bold.gray((typeof (reco.val)).toUpperCase())
+                                chalk.bold.gray(reco.val === null ? "NULL" : (typeof (reco.val)).toUpperCase())
                                 ,
                                 chalk.gray(
                                     shortenText(
@@ -217,10 +270,24 @@ const config = require('../config');
 
 
 const gutil = require('gulp-util');
+
+(function applyNamespaceToLogs() {//brand namespace
+
+    const originalGutilLog = gutil.log;
+
+    global.spacelog = function () {
+        const mainArguments = [].slice.call(arguments);
+
+        mainArguments.unshift(chalk.bold("SpaceCMS"));
+
+        return originalGutilLog.apply(this, mainArguments);
+    };
+
+})();
+
 const chalk = require('chalk');
 
 const twig = require('gulp-twig');
-
 
 const yaml = require('js-yaml');
 const fs = require('fs');
@@ -244,8 +311,10 @@ const browserSync = require('browser-sync');
  import browserSync from 'browser-sync';*/
 
 
-gulp.task('space-cms', function () {
+gulp.task('space-cms', function (cb) {
 
+
+    debugReset();
     //const ftpSync = require('ftpsync');
 
     let pkg, projectName;
@@ -267,8 +336,11 @@ gulp.task('space-cms', function () {
         //conf = yaml.safeLoad(fs.readFileSync('./cms.config.yml', 'utf8'));
         //confEnv = conf[global.isProd ? 'prod' : 'dev'];
 
+        if (!projectName||!projectName.length) throw("Unspecified project name");
+
     } catch (e) {
-        console.error("Error parsing configuration. Please make sure configuration has maintained YAML structure \n(i.e. no duplicate keys, correct spaces, line breaks etc.)");
+        spacelog(chalk.red("Error finding project name. Please make sure you have specified a project name within your package.json file."));
+        cb();
         return;
     }
 
@@ -282,7 +354,6 @@ gulp.task('space-cms', function () {
      }))
      .pipe(gulp.dest(config.buildDir));
      */
-
 
     const g = gulp.src([
         config.sourceDir + '**/*.twig'
@@ -305,48 +376,50 @@ gulp.task('space-cms', function () {
         });
     };
 
+
     if (!fs.existsSync(tmpDir))
         fs.mkdirSync(tmpDir);
 
-
-    const jsTemplate = "<script>var gn = '__etcms_global';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>";
-
-
     //ignore twig inside body tags for realtime updating
-    if (!isProd) {
+    if (!isProd||isStage) {
         g.pipe(greplace("<body", "{% verbatim %}<body"));
         g.pipe(greplace("</body>", "</body>{% endverbatim %}"));
     }
 
-
-    //inject js code
-    g.pipe(greplace("<head>", "<head>" + jsTemplate));
+    if (!isProd||isStage){
+        //inject js code
+        const jsTemplate = "<script>var gn = '__etcms_global';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>";
+        g.pipe(greplace("<head>", "<head>" + jsTemplate));
+    }
 
     g
     // .pipe(rename({extname: '.twig'}))
         .pipe(gulp.dest(tmpDir));
 
+
+
     g.on('end', function () {
         loadSpaceData().then(function onLoadSpaceData(body) {
 
-            const g = gulp.src(
+            const x = gulp.src(
                 [
                     tmpDir + "**/*.twig",
                     '!' + tmpDir + "views/**/*.twig"
                 ]);
 
-            g.pipe(print());
+
+            //g.pipe(print());
+
             //  g
             //   .pipe(greplace("<body", "{% verbatim %}<body"))
             //  .pipe(greplace("</body>", "</body>{% endverbatim %}"));
 
             //global.console = {};
 
-
             const reportedTwigErrors = [];
 
 
-            g.pipe(twig({
+            x.pipe(twig({
                 //trace:true,
                 debug: true,
                 strict_variables: true,
@@ -366,36 +439,51 @@ gulp.task('space-cms', function () {
                 },
                 onError: function (err) {
                     // console.log=origConsoleLog;//reset
+                    //console.log("spacecms.js: (424)",debugGetLastFileReference());//fordebug: debug print
+                    err.file=err.file?err.file:debugGetLastFileReference();
 
-
-                    const relativeFilePath = err.file.replace(process.cwd() + "/" + tmpDir, config.sourceDir);
+                    const relativeFilePath = err.file&&err.file.length?err.file.replace(process.cwd() + "/" + tmpDir, config.sourceDir):"[UNKNOWN FILE]";
 
                     const errId = err.message + debugGetLastTwigExpressionOut();
 
+                    //const specifiedTokenExpression=chalk.bold(debugGetLastTwigExpressionOut() ? "'" + debugGetLastTwigExpressionOut() + "'" : "");
+
                     if (!reportedTwigErrors[errId]) {
-                        console.warn(chalk.red("Twig Error:"), chalk.red(err.message), chalk.bold(debugGetLastTwigExpressionOut() ? "'" + debugGetLastTwigExpressionOut() + "'" : ""), chalk.magenta(relativeFilePath));
+
+                        spacelog(chalk.red("Twig Error:"), chalk.red(err.message));
+                        gutil.log("\t",chalk.magenta("In File: " + relativeFilePath));
                         reportedTwigErrors[errId] = 1;
+
                     }
+
+                    //cb();
+
+
                 }
             }));
 
+            x.on('end', function () {
 
-            g.on('end', function () {
                 debugGetTwigTokenObjectReferences(body);
+
+                browserSync.reload();
+                cb();
+
             });
 
 
             /* if (isProd)
              g.pipe(rename({extname: '.html'}));*/
 
-            g
+            x
                 .pipe(gulp.dest(config.buildDir));
 
 
-            browserSync.reload();
+
 
         }).catch(function onAPIError(err, s, r) {
-            gutil.log(chalk.red("Failed to request from Space CMS API:"), chalk.magenta(err));
+            spacelog(chalk.red("Failed to request from Space CMS API:"), chalk.magenta(err));
+            cb();
         });
 
     });
