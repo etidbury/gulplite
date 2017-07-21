@@ -367,12 +367,9 @@ gulp.task('space-cms', function (cb) {
             headers: {
                 'User-Agent': 'gulplite'
             },
-            //agentOptions: {
-            //   ca: fs.readFileSync(__dirname+'/../ca.spacecms.api.pem')
-            // }
+
             json: true,
             "rejectUnauthorized": false
-            //rejectUnauthorised: false
         });
     };
 
