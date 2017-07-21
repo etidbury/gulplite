@@ -1,4 +1,7 @@
 'use strict';
+const API_URL = "https://spacecms.com/";
+const GLOBAL_VAR_NAME = "__spacecms_global";
+const DEFAULT_SPACE_UPDATE_COOLDOWN=300;//ms
 
 const gulp = require('gulp');
 const config = require('../config');
@@ -319,7 +322,6 @@ gulp.task('space-cms', function (cb) {
 
     let pkg, projectName;
 
-    const API_URL = "https://spacecms.com/";
 
 
     try {
@@ -385,7 +387,8 @@ gulp.task('space-cms', function (cb) {
 
     if (!isProd||isStage){
         //inject js code
-        const jsTemplate = "<script>var gn = '__etcms_global';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>";
+        const jsTemplate = "<script>var gn = '"+GLOBAL_VAR_NAME+"';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>" +
+            "<script src='https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.12/index.js'></script>";
         g.pipe(greplace("<head>", "<head>" + jsTemplate));
     }
 
@@ -428,7 +431,8 @@ gulp.task('space-cms', function (cb) {
                     space: body,
                     config: {
                         api_url: API_URL,
-                        env: process.env.NODE_ENV
+                        env: process.env.NODE_ENV,
+                        space_update_cooldown:DEFAULT_SPACE_UPDATE_COOLDOWN
                     },
                     project: {
                         name: projectName
@@ -459,6 +463,9 @@ gulp.task('space-cms', function (cb) {
                 }
             }));
 
+            //if (isProd)
+            //x.pipe(rename({extname: '.html'}));
+
             x.on('end', function () {
 
                 debugGetTwigTokenObjectReferences(body);
@@ -469,8 +476,7 @@ gulp.task('space-cms', function (cb) {
             });
 
 
-            /* if (isProd)
-             g.pipe(rename({extname: '.html'}));*/
+
 
             x
                 .pipe(gulp.dest(config.buildDir));
