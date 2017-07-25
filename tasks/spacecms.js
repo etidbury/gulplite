@@ -2,6 +2,7 @@
 const API_URL = "https://spacecms.com/";
 const GLOBAL_VAR_NAME = "__spacecms_global";
 const DEFAULT_SPACE_UPDATE_COOLDOWN = 300;//ms
+const SPACE_LIB_JS_URL='https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.14/index.js';
 
 const gulp = require('gulp');
 const config = require('../config');
@@ -408,7 +409,7 @@ gulp.task('space-cms', function (cb) {
     if (!isProd || isStage) {
         //inject js code
         const jsTemplate = "<script>var gn = '" + GLOBAL_VAR_NAME + "';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>" +
-            "<script src='https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.12/index.js'></script>";
+            "<script src='"+SPACE_LIB_JS_URL+"'></script>";
         g.pipe(greplace("<head>", "<head>" + jsTemplate));
     }
 
