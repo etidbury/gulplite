@@ -1,7 +1,7 @@
 'use strict';
 const API_URL = "https://spacecms.com/";
 const GLOBAL_VAR_NAME = "__spacecms_global";
-const DEFAULT_SPACE_UPDATE_COOLDOWN=300;//ms
+const DEFAULT_SPACE_UPDATE_COOLDOWN = 300;//ms
 
 const gulp = require('gulp');
 const config = require('../config');
@@ -13,7 +13,7 @@ const config = require('../config');
     const oldConsoleLog = console.log;
 
     let logs = [];
-    let  tokenReferences = [];
+    let tokenReferences = [];
     let fileReferences = [];
 
     global.console.log = function () {
@@ -56,11 +56,11 @@ const config = require('../config');
 
             }
             //oldConsoleLog("spacecms.js:stringout (49)",stringOut);//fordebug: debug print
-            if (stringOut.indexOf("Twig.Template.reset")>-1){
-                const fileExpression= arguments[0];
+            if (stringOut.indexOf("Twig.Template.reset") > -1) {
+                const fileExpression = arguments[0];
                 //oldConsoleLog("spacecms.js:fil (49)",);//fordebug: debug print
 
-                fileReferences.push(fileExpression[fileExpression.length-1].split('Reseting template ')[1]);
+                fileReferences.push(fileExpression[fileExpression.length - 1].split('Reseting template ')[1]);
 
             }
 
@@ -68,7 +68,7 @@ const config = require('../config');
     };
 
 
-    global.debugReset=function(){
+    global.debugReset = function () {
         logs = [];
         tokenReferences = [];
         fileReferences = [];
@@ -120,8 +120,8 @@ const config = require('../config');
 
     };
 
-    global.debugGetLastFileReference=function(){
-        return fileReferences.length?fileReferences[fileReferences.length-1]:false;
+    global.debugGetLastFileReference = function () {
+        return fileReferences.length ? fileReferences[fileReferences.length - 1] : false;
     };
     global.debugGetTwigTokenObjectReferences = function (space) {
 
@@ -131,8 +131,6 @@ const config = require('../config');
 
 
         let m = tokenReferences.filter(onlyUnique);
-
-
 
 
         var getValueFromRef = function (ref) {
@@ -198,9 +196,9 @@ const config = require('../config');
                         //remove dot at start if exists
                         invalidProps = invalidProps[0] === "." ? invalidProps.substr(1) : invalidProps;
 
-                        spacelog(chalk.red("Twig Error: "+"Undefined Properties Found"));
+                        spacelog(chalk.red("Twig Error: " + "Undefined Properties Found"));
 
-                        gutil.log("\t",chalk.gray(objectToken.ref.replace(invalidProps, chalk.underline.red(invalidProps))));
+                        gutil.log("\t", chalk.gray(objectToken.ref.replace(invalidProps, chalk.underline.red(invalidProps))));
 
                         const getRefKeys = function (validObject) {
 
@@ -220,12 +218,12 @@ const config = require('../config');
                             return text;
                         };
 
-                        gutil.log("\t",chalk.blue("Available Properties"));
+                        gutil.log("\t", chalk.blue("Available Properties"));
 
                         getRefKeys(lastParentSpecified.val).forEach(function (reco) {
 
                             //console.log("spacecms.js:objectTokenref (198)",reco.ref,objectToken.ref);//fordebug: debug print
-                            gutil.log("\t",chalk.gray(objectToken.ref
+                            gutil.log("\t", chalk.gray(objectToken.ref
                                     .replace(
                                         invalidProps, chalk.blue(reco.ref)
                                         , objectToken.ref.indexOf(lastParentSpecified.ref)
@@ -323,28 +321,50 @@ gulp.task('space-cms', function (cb) {
     let pkg, projectName;
 
 
+    /*---------determine project name---------*/
+    const projectNameArgId = "--project=";
+    const projectNameArgIdPos = process.argv.join('').indexOf(projectNameArgId);
 
-    try {
+    console.log("spacecms.js:pr (327)", projectNameArgIdPos);//fordebug: debug print
+    let overriddenProjectName = false;
 
-
-        pkg = require(process.cwd() + '/package');
-
-
-        //console.log("spacecms.js:pkg (44)",pkg);//fordebug: debug print
-
-        projectName = pkg.name;
-
-        //projectName=fs.readFileSync('')
-        //conf = yaml.safeLoad(fs.readFileSync('./cms.config.yml', 'utf8'));
-        //confEnv = conf[global.isProd ? 'prod' : 'dev'];
-
-        if (!projectName||!projectName.length) throw("Unspecified project name");
-
-    } catch (e) {
-        spacelog(chalk.red("Error finding project name. Please make sure you have specified a project name within your package.json file."));
-        cb();
-        return;
+    if (process.argv.join('').indexOf(projectNameArgId) > -1) {
+        for (let i = 0; i < process.argv.length; i++) {
+            let arg = process.argv[i].split(projectNameArgId);
+            if (arg[1] && arg[1].length > 0) {
+                projectName = arg[1].trim();
+                overriddenProjectName = true;
+                spacelog(chalk.blue("Overriding Project Name:", projectName));
+            }
+        }
     }
+
+
+    if (!overriddenProjectName) {
+        try {
+
+            pkg = require(process.cwd() + '/package');
+
+
+            //console.log("spacecms.js:pkg (44)",pkg);//fordebug: debug print
+
+            projectName = pkg.name;
+
+            //projectName=fs.readFileSync('')
+            //conf = yaml.safeLoad(fs.readFileSync('./cms.config.yml', 'utf8'));
+            //confEnv = conf[global.isProd ? 'prod' : 'dev'];
+
+            if (!projectName || !projectName.length) throw("Unspecified project name");
+
+        } catch (e) {
+            spacelog(chalk.red("Error finding project name. Please make sure you have specified a project name within your package.json file."));
+            cb();
+            return;
+        }
+    }
+
+
+    /*---------determine project name---------*/
 
 
     /* return gulp.src(files)
@@ -380,14 +400,14 @@ gulp.task('space-cms', function (cb) {
         fs.mkdirSync(tmpDir);
 
     //ignore twig inside body tags for realtime updating
-    if (!isProd||isStage) {
+    if (!isProd || isStage) {
         g.pipe(greplace("<body", "{% verbatim %}<body"));
         g.pipe(greplace("</body>", "</body>{% endverbatim %}"));
     }
 
-    if (!isProd||isStage){
+    if (!isProd || isStage) {
         //inject js code
-        const jsTemplate = "<script>var gn = '"+GLOBAL_VAR_NAME+"';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>" +
+        const jsTemplate = "<script>var gn = '" + GLOBAL_VAR_NAME + "';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>" +
             "<script src='https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.12/index.js'></script>";
         g.pipe(greplace("<head>", "<head>" + jsTemplate));
     }
@@ -395,7 +415,6 @@ gulp.task('space-cms', function (cb) {
     g
     // .pipe(rename({extname: '.twig'}))
         .pipe(gulp.dest(tmpDir));
-
 
 
     g.on('end', function () {
@@ -432,7 +451,7 @@ gulp.task('space-cms', function (cb) {
                     config: {
                         api_url: API_URL,
                         env: process.env.NODE_ENV,
-                        space_update_cooldown:DEFAULT_SPACE_UPDATE_COOLDOWN
+                        space_update_cooldown: DEFAULT_SPACE_UPDATE_COOLDOWN
                     },
                     project: {
                         name: projectName
@@ -441,9 +460,9 @@ gulp.task('space-cms', function (cb) {
                 onError: function (err) {
                     // console.log=origConsoleLog;//reset
                     //console.log("spacecms.js: (424)",debugGetLastFileReference());//fordebug: debug print
-                    err.file=err.file?err.file:debugGetLastFileReference();
+                    err.file = err.file ? err.file : debugGetLastFileReference();
 
-                    const relativeFilePath = err.file&&err.file.length?err.file.replace(process.cwd() + "/" + tmpDir, config.sourceDir):"[UNKNOWN FILE]";
+                    const relativeFilePath = err.file && err.file.length ? err.file.replace(process.cwd() + "/" + tmpDir, config.sourceDir) : "[UNKNOWN FILE]";
 
                     const errId = err.message + debugGetLastTwigExpressionOut();
 
@@ -452,7 +471,7 @@ gulp.task('space-cms', function (cb) {
                     if (!reportedTwigErrors[errId]) {
 
                         spacelog(chalk.red("Twig Error:"), chalk.red(err.message));
-                        gutil.log("\t",chalk.magenta("In File: " + relativeFilePath));
+                        gutil.log("\t", chalk.magenta("In File: " + relativeFilePath));
                         reportedTwigErrors[errId] = 1;
 
                     }
@@ -476,12 +495,8 @@ gulp.task('space-cms', function (cb) {
             });
 
 
-
-
             x
                 .pipe(gulp.dest(config.buildDir));
-
-
 
 
         }).catch(function onAPIError(err, s, r) {
