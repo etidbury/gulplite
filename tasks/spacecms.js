@@ -2,7 +2,7 @@
 const API_URL = "https://spacecms.com/";
 const GLOBAL_VAR_NAME = "__spacecms_global";
 const DEFAULT_SPACE_UPDATE_COOLDOWN = 300;//ms
-const SPACE_LIB_JS_URL='https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.14/index.js';
+const SPACE_LIB_JS_URL='https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.15/index.js';
 
 const gulp = require('gulp');
 const config = require('../config');
