@@ -15,7 +15,10 @@ if (gulpCommands.includes('-v')||gulpCommands.includes('--version')){
     process.exit(1);
 }
 
-const e=__dirname+'/node_modules/.bin/babel-node';
+const execExtension=(process.platform.indexOf('win')>-1 ? '.cmd' : '');
+
+const c=__dirname+'/node_modules/.bin/cross-env'+execExtension;
+const e=__dirname+'/node_modules/.bin/babel-node'+execExtension;
 
 /*
 const babel={
@@ -39,7 +42,7 @@ bc=JSON.parse(bc);
 
 const args=  [  '--presets='+bc.presets.join(',')
     ,'--plugins='+bc.plugins.join(',')
-    ,__dirname+'/node_modules/.bin/gulp'
+    ,__dirname+'/node_modules/gulp/bin/gulp.js'
     ,'--gulpfile'
     ,__dirname+'/gulpfile.babel.js'
     ,'--cwd',process.cwd()

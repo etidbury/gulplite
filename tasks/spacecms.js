@@ -38,8 +38,10 @@ const config = require('../config');
 
         //oldConsoleLog("spacecms.js:log (32)",arguments[0]);//fordebug: debug print
 
+        //oldConsoleLog(x);
 
-        if (x.indexOf("twig/twig.js:") <= -1) {
+
+        if (x.indexOf("twig.js:") <= -1) {
             Array.prototype.unshift.call(arguments);
             oldConsoleLog.apply(this, arguments);
 
@@ -323,9 +325,8 @@ gulp.task('space-cms', function (cb) {
 
     /*---------determine project name---------*/
     const projectNameArgId = "--project=";
-    const projectNameArgIdPos = process.argv.join('').indexOf(projectNameArgId);
+    //const projectNameArgIdPos = process.argv.join('').indexOf(projectNameArgId);
 
-    console.log("spacecms.js:pr (327)", projectNameArgIdPos);//fordebug: debug print
     let overriddenProjectName = false;
 
     if (process.argv.join('').indexOf(projectNameArgId) > -1) {

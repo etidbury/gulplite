@@ -1,6 +1,6 @@
 {
   "name": "gulplite",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "author": "Edd Tidbury",
   "description": "Gulp configuration for ES6, SASS and additional features.",
   "repository": {
@@ -17,8 +17,7 @@
   "bin": {
     "gulplite": "index.js"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.3.15",
@@ -61,6 +60,7 @@
     "gulp-util": "^3.0.6",
     "history": "^1.17.0",
     "istanbul": "^0.4.0",
+    "js-yaml": "^3.9.0",
     "jsdom": "^8.0.2",
     "lodash": "^3.10.0",
     "minimist": "^1.2.0",
