@@ -15,9 +15,8 @@ if (gulpCommands.includes('-v')||gulpCommands.includes('--version')){
     process.exit(1);
 }
 
-const execExtension=(process.platform.indexOf('win')>-1 ? '.cmd' : '');
+const execExtension=(process.platform.indexOf('win32')>-1 ||process.platform.indexOf('win64')>-1? '.cmd' : '');
 
-const c=__dirname+'/node_modules/.bin/cross-env'+execExtension;
 const e=__dirname+'/node_modules/.bin/babel-node'+execExtension;
 
 /*
