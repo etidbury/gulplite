@@ -1,8 +1,9 @@
 'use strict';
 const API_URL = "https://spacecms.com/";
+//const API_URL = "http://localhost:9000/";
 const GLOBAL_VAR_NAME = "__spacecms_global";
 const DEFAULT_SPACE_UPDATE_COOLDOWN = 300;//ms
-const SPACE_LIB_JS_URL='https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.24/index.js';
+const SPACE_LIB_JS_URL = 'https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.24/index.js';
 
 //const SPACE_LIB_JS_URL='http://localhost:9006/index.js';
 
@@ -300,6 +301,7 @@ const greplace = require('gulp-replace-fix');
 const print = require('gulp-print');
 const rp = require('request-promise');
 const browserSync = require('browser-sync');
+const path = require('path');
 
 
 /*
@@ -329,7 +331,6 @@ gulp.task('space-cms', function (cb) {
     const projectNameArgId = "--project=";
     const projectNameArgIdPos = process.argv.join('').indexOf(projectNameArgId);
 
-    console.log("spacecms.js:pr (327)", projectNameArgIdPos);//fordebug: debug print
     let overriddenProjectName = false;
 
     if (process.argv.join('').indexOf(projectNameArgId) > -1) {
@@ -382,10 +383,9 @@ gulp.task('space-cms', function (cb) {
      */
 
     const g = gulp.src([
-        config.sourceDir + '**/*.twig'
-        , '!' + config.sourceDir + '**/_*.*'//ignore files that start with underscore
+        path.join(config.sourceDir, '**/*.twig')
+        , '!' + path.join(config.sourceDir, '**/_*.*')//ignore files that start with underscore
     ]);
-
 
     const loadSpaceData = function () {
         return rp({
@@ -399,9 +399,7 @@ gulp.task('space-cms', function (cb) {
         });
     };
 
-
-    if (!fs.existsSync(tmpDir))
-        fs.mkdirSync(tmpDir);
+    //todo: write variable mapping file (like sails helper config)
 
     //ignore twig inside body tags for realtime updating
     if (!isProd || isStage) {
@@ -409,16 +407,40 @@ gulp.task('space-cms', function (cb) {
         g.pipe(greplace("</body>", "</body>{% endverbatim %}"));
     }
 
+
+    //inject js code
+    let jsTemplate = "<script>var gn = '" + GLOBAL_VAR_NAME + "';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>";
+
     if (!isProd || isStage) {
-        //inject js code
-        const jsTemplate = "<script>var gn = '" + GLOBAL_VAR_NAME + "';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>" +
-            "<script src='"+SPACE_LIB_JS_URL+"'></script>";
-        g.pipe(greplace("<head>", "<head>" + jsTemplate));
+        jsTemplate +=
+            "<script src='" + SPACE_LIB_JS_URL + "'></script>";
+
     }
+    g.pipe(greplace("<head>", "<head>" + jsTemplate));
+
+    const tmpSpaceCmsDir = path.join(tmpDir, 'spacecms');
+
+
+    try {
+
+        fs.mkdirSync(path.join(process.cwd(), tmpDir));
+
+    } catch (err) {
+        /*ignore*/
+    }
+
+    try {
+        fs.mkdirSync(path.join(process.cwd(), tmpSpaceCmsDir));
+
+    } catch (err) {
+        // console.log("sails.js[104]:mkdir",err);//fordebug: print debug
+        /*ignore*/
+    }
+
 
     g
     // .pipe(rename({extname: '.twig'}))
-        .pipe(gulp.dest(tmpDir));
+        .pipe(gulp.dest(tmpSpaceCmsDir));
 
 
     g.on('end', function () {
@@ -426,8 +448,8 @@ gulp.task('space-cms', function (cb) {
 
             const x = gulp.src(
                 [
-                    tmpDir + "**/*.twig",
-                    '!' + tmpDir + "views/**/*.twig"
+                    path.join(tmpSpaceCmsDir, "**/*.twig"),
+                    "!" + path.join(tmpSpaceCmsDir, "views/**/*.twig")
                 ]);
 
 
@@ -466,7 +488,7 @@ gulp.task('space-cms', function (cb) {
                     //console.log("spacecms.js: (424)",debugGetLastFileReference());//fordebug: debug print
                     err.file = err.file ? err.file : debugGetLastFileReference();
 
-                    const relativeFilePath = err.file && err.file.length ? err.file.replace(process.cwd() + "/" + tmpDir, config.sourceDir) : "[UNKNOWN FILE]";
+                    const relativeFilePath = err.file && err.file.length ? err.file.replace(path.join(process.cwd(), tmpSpaceCmsDir), config.sourceDir) : "[UNKNOWN FILE]";
 
                     const errId = err.message + debugGetLastTwigExpressionOut();
 

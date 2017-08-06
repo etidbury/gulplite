@@ -1,6 +1,7 @@
 'use strict';
 const gulp=require('gulp');
 const config=require('../config');
+const path=require('path');
 
 
 gulp.task('watch', ['browserSync'], function() {
@@ -17,8 +18,12 @@ gulp.task('watch', ['browserSync'], function() {
       '!' + config.sourceDir + '**/[^_]*.*'//ignore files that start with underscore
       ], ['copyMiscRootFiles']);
 
-
   gulp.watch(config.sourceDir + '**/*.twig',['space-cms']);
-
+  gulp.watch([
+      path.join(process.cwd(), 'api/**/*')
+      ,path.join(process.cwd(), 'config/**/*')
+      ,path.join(process.cwd(), '.sailsrc')
+      ,path.join(process.cwd(), '.twigcmsrc')
+  ],['sails']);
 
 });

@@ -9,7 +9,7 @@ gulp.task('dev', ['clean'], function(cb) {
 
   global.isProd = false;
 
-  return runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms'], 'watch', cb);
+  return runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms','sails'], 'watch', cb);
    // runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms'], cb);
 
 });
