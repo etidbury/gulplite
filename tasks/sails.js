@@ -100,187 +100,193 @@ gulp.task('sails', function (cb) {
 
     const sailsDir = 'sails';
 
-    //detect if project has sails with config directory in root
-    if (fs.statSync(path.join(process.cwd(), '.sailsrc')).isFile() && fs.statSync(path.join(process.cwd(), 'config')).isDirectory()) {
+    try {
+        //detect if project has sails with config directory in root
+        if (fs.statSync(path.join(process.cwd(), '.sailsrc')).isFile() && fs.statSync(path.join(process.cwd(), 'config')).isDirectory()) {
 
-        (function addSailsConfigIDESourceMapping() {
-            gutil.log(chalk.blue("SailsJs Helper"), "Mapping Sails configuration variables...");
-            let allSailsConfig = {};
-            let allSailsService = {};
-            let allSailsModel = {};
-
-
-            /**
-             * Map all configuration to one object
-             */
-            walkSync(path.join(process.cwd(), 'config')).forEach(function (fileName) {
-                if (fileName.indexOf(".js") <= -1) return;
-
-                purgeCache(fileName);
-
-                allSailsConfig = _.extend(allSailsConfig, require(fileName));
-
-            });
-
-            /**
-             * Map available service objects and register function names
-             */
-            walkSync(path.join(process.cwd(), 'api/services')).forEach(function (fileName) {
-                if (fileName.indexOf(".js") <= -1) return;
-
-                purgeCache(fileName);
+            (function addSailsConfigIDESourceMapping() {
+                gutil.log(chalk.blue("SailsJs Helper"), "Mapping Sails configuration variables...");
+                let allSailsConfig = {};
+                let allSailsService = {};
+                let allSailsModel = {};
 
 
-                const serviceName = function (fn) {
-                    fn = fn.split('/');
-                    fn = fn[fn.length - 1].split('.js')[0];
-                    return fn;
-                }(fileName);
+                /**
+                 * Map all configuration to one object
+                 */
+                walkSync(path.join(process.cwd(), 'config')).forEach(function (fileName) {
+                    if (fileName.indexOf(".js") <= -1) return;
 
-                const s = {};
-                s[serviceName] = require(fileName);
+                    purgeCache(fileName);
 
+                    allSailsConfig = _.extend(allSailsConfig, require(fileName));
 
-                allSailsService = _.extend(allSailsService, s);
-
-            });
-            const concatServiceToString = function () {
-                const FUNC_PLACEHOLDER = "function(){}";
-
-                let m = allSailsService;
-                for (let serviceName in allSailsService) {
-                    //if (!allSailsService.hasOwnProperty(serviceName)){
-                    const singleService = allSailsService[serviceName];
-
-                    for (let prop in singleService) {
-                        //if (!singleService.hasOwnProperty(prop)){
-                        switch (typeof singleService[prop]) {
-                            case "function":
-                                m[serviceName][prop] = FUNC_PLACEHOLDER;
-                                break;
-                            case "object":
-                            case "string":
-                                //ignore, keep the same
-                                break;
-
-                            default:
-                                delete m[serviceName][prop];
-                                break;
-                        }
-
-                        //}
-                    }
-                    //}
-                }
-
-                m = JSON.stringify(m, null, "\t").split('"' + FUNC_PLACEHOLDER + '"').join(FUNC_PLACEHOLDER);
-
-                return m;
-
-            }();
-
-
-            /**
-             * Map available model objects and register function names
-             */
-
-            global = _.extend(global, allSailsService);//make services available to avoid undefined errors when requiring models
-
-            walkSync(path.join(process.cwd(), 'api/models')).forEach(function (fileName) {
-                if (fileName.indexOf(".js") <= -1) return;
-
-                purgeCache(fileName);
-
-                const modelName = function (fn) {
-                    fn = fn.split('/');
-                    fn = fn[fn.length - 1].split('.js')[0];
-                    return fn;
-                }(fileName);
-
-                const s = {};
-                try {
-
-
-                    s[modelName] = require(fileName);
-
-                } catch (err) {
-                    gutil.log(chalk.blue("SailsJs Helper"), chalk.red("Failed to write source mapping for SailsJs model:", modelName));
-                }
-
-                allSailsModel = _.extend(allSailsModel, s);
-
-            });
-
-            function camelize(str) {
-                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
-                    return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
-                }).replace(/\s+/g, '');
-            }
-            const concatModelToString = function () {
-
-                let m = "";
-
-                const mapSailsAttributeType = function (sailsAttributeType) {
-                    switch (sailsAttributeType) {
-
-                        default:
-                            return sailsAttributeType;
-                            break
-                    }
-                };
-
-                for (let modelName in allSailsModel) {
-                    const attrs = allSailsModel[modelName].attributes;
-
-                    m += `/**\n * @typedef {Object} ` + modelName + "\n";
-
-                    m+=` * @typedef {Project} ` + camelize(modelName) + "\n";
-                    ['created','updated','deleted'].forEach(function(prefix){
-                        m+=` * @typedef {Project} ` + prefix+modelName + "\n";
-                    });
-
-                    m+=" * \n";
-
-                    //iterate through attributes
-                    for (let attributeName in attrs) {
-                        if (typeof attrs[attributeName].type !== "undefined") {
-                            m += " * @property {" + mapSailsAttributeType(attrs[attributeName].type) + "} " + attributeName + "\n";
-                        }
-                    }
-                    m += ` **/\n`;
-                }
-
-
-                m += "\n\n";
-
-                return m;
-
-            }();
-
-
-            initTmpDirectories();
-
-
-            fs.writeFile(path.join(process.cwd(), tmpDir, sailsDir, 'map.js')
-                , "global.sails={};" +
-                "sails.config=" + JSON.stringify(allSailsConfig, null, "\t") + ";" +
-                "sails.services=" + concatServiceToString + ";\n\n"
-                + concatModelToString
-                , null, function (err) {
-                    if (err) {
-                        gutil.log(chalk.blue("SailsJs Helper"), chalk.red("Failed to write source mapping for Sails\n", err));
-                        cb();
-                        return;
-                    }
-                    gutil.log(chalk.blue("SailsJs Helper"), "Source Mapping - Complete");
-                    cb();
                 });
 
-        })();
+                /**
+                 * Map available service objects and register function names
+                 */
+                walkSync(path.join(process.cwd(), 'api/services')).forEach(function (fileName) {
+                    if (fileName.indexOf(".js") <= -1) return;
+
+                    purgeCache(fileName);
 
 
-    } else {
-        //console.log("sails.js[71]:","ignore");//fordebug: print debug
+                    const serviceName = function (fn) {
+                        fn = fn.split('/');
+                        fn = fn[fn.length - 1].split('.js')[0];
+                        return fn;
+                    }(fileName);
+
+                    const s = {};
+                    s[serviceName] = require(fileName);
+
+
+                    allSailsService = _.extend(allSailsService, s);
+
+                });
+                const concatServiceToString = function () {
+                    const FUNC_PLACEHOLDER = "function(){}";
+
+                    let m = allSailsService;
+                    for (let serviceName in allSailsService) {
+                        //if (!allSailsService.hasOwnProperty(serviceName)){
+                        const singleService = allSailsService[serviceName];
+
+                        for (let prop in singleService) {
+                            //if (!singleService.hasOwnProperty(prop)){
+                            switch (typeof singleService[prop]) {
+                                case "function":
+                                    m[serviceName][prop] = FUNC_PLACEHOLDER;
+                                    break;
+                                case "object":
+                                case "string":
+                                    //ignore, keep the same
+                                    break;
+
+                                default:
+                                    delete m[serviceName][prop];
+                                    break;
+                            }
+
+                            //}
+                        }
+                        //}
+                    }
+
+                    m = JSON.stringify(m, null, "\t").split('"' + FUNC_PLACEHOLDER + '"').join(FUNC_PLACEHOLDER);
+
+                    return m;
+
+                }();
+
+
+                /**
+                 * Map available model objects and register function names
+                 */
+
+                global = _.extend(global, allSailsService);//make services available to avoid undefined errors when requiring models
+
+                walkSync(path.join(process.cwd(), 'api/models')).forEach(function (fileName) {
+                    if (fileName.indexOf(".js") <= -1) return;
+
+                    purgeCache(fileName);
+
+                    const modelName = function (fn) {
+                        fn = fn.split('/');
+                        fn = fn[fn.length - 1].split('.js')[0];
+                        return fn;
+                    }(fileName);
+
+                    const s = {};
+                    try {
+
+
+                        s[modelName] = require(fileName);
+
+                    } catch (err) {
+                        gutil.log(chalk.blue("SailsJs Helper"), chalk.red("Failed to write source mapping for SailsJs model:", modelName));
+                    }
+
+                    allSailsModel = _.extend(allSailsModel, s);
+
+                });
+
+                function camelize(str) {
+                    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (letter, index) {
+                        return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
+                    }).replace(/\s+/g, '');
+                }
+
+                const concatModelToString = function () {
+
+                    let m = "";
+
+                    const mapSailsAttributeType = function (sailsAttributeType) {
+                        switch (sailsAttributeType) {
+
+                            default:
+                                return sailsAttributeType;
+                                break
+                        }
+                    };
+
+                    for (let modelName in allSailsModel) {
+                        const attrs = allSailsModel[modelName].attributes;
+
+                        m += `/**\n * @typedef {Object} ` + modelName + "\n";
+
+                        m += ` * @typedef {Project} ` + camelize(modelName) + "\n";
+                        ['created', 'updated', 'deleted'].forEach(function (prefix) {
+                            m += ` * @typedef {Project} ` + prefix + modelName + "\n";
+                        });
+
+                        m += " * \n";
+
+                        //iterate through attributes
+                        for (let attributeName in attrs) {
+                            if (typeof attrs[attributeName].type !== "undefined") {
+                                m += " * @property {" + mapSailsAttributeType(attrs[attributeName].type) + "} " + attributeName + "\n";
+                            }
+                        }
+                        m += ` **/\n`;
+                    }
+
+
+                    m += "\n\n";
+
+                    return m;
+
+                }();
+
+
+                initTmpDirectories();
+
+
+                fs.writeFile(path.join(process.cwd(), tmpDir, sailsDir, 'map.js')
+                    , "global.sails={};" +
+                    "sails.config=" + JSON.stringify(allSailsConfig, null, "\t") + ";" +
+                    "sails.services=" + concatServiceToString + ";\n\n"
+                    + concatModelToString
+                    , null, function (err) {
+                        if (err) {
+                            gutil.log(chalk.blue("SailsJs Helper"), chalk.red("Failed to write source mapping for Sails\n", err));
+                            cb();
+                            return;
+                        }
+                        gutil.log(chalk.blue("SailsJs Helper"), "Source Mapping - Complete");
+                        cb();
+                    });
+
+            })();
+
+
+        } else {
+            //console.log("sails.js[71]:","ignore");//fordebug: print debug
+            cb();
+        }
+    }catch(sailsErr){
+        gutil.log(chalk.blue("SailsJs Helper"), "Not in use.");
         cb();
     }
 
