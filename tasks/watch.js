@@ -16,7 +16,7 @@ gulp.task('watch', ['browserSync'], function() {
       '!' + config.sourceDir + 'js/**/*',
       '!' + config.sourceDir + '**/*.twig',
       '!' + config.sourceDir + '**/[^_]*.*'//ignore files that start with underscore
-      ], ['copyMiscRootFiles']);
+      ], {interval:1000},['copyMiscRootFiles']);
 
   gulp.watch(config.sourceDir + '**/*.twig',['space-cms']);
   gulp.watch([
@@ -24,6 +24,6 @@ gulp.task('watch', ['browserSync'], function() {
       ,path.join(process.cwd(), 'config/**/*')
       ,path.join(process.cwd(), '.sailsrc')
       ,path.join(process.cwd(), '.twigcmsrc')
-  ],['sails']);
+  ],{interval:1000},['sails']);
 
 });

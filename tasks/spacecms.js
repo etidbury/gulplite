@@ -371,8 +371,8 @@ gulp.task('space-cms', function (cb) {
     }
 
 
-    /*---------determine project name---------*/
 
+    /*---------determine project name---------*/
 
     /* return gulp.src(files)
      .pipe(twig({
@@ -384,9 +384,11 @@ gulp.task('space-cms', function (cb) {
      .pipe(gulp.dest(config.buildDir));
      */
 
+    //console.log("spacecms.js[387]:",config.sourceDir,path.resolve(config.sourceDir, '**/*.twig'));//fordebug: print debug
+
     const g = gulp.src([
-        path.join(config.sourceDir, '**/*.twig')
-        , '!' + path.join(config.sourceDir, '**/_*.*')//ignore files that start with underscore
+        config.sourceDir+ '**/*.twig',
+        '!' + config.sourceDir+ '**/_*.*' //ignore files that start with underscore
     ]);
 
     const loadSpaceData = function () {

@@ -1,6 +1,6 @@
 {
   "name": "gulplite",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "author": "Edd Tidbury",
   "description": "Gulp configuration for ES6, SASS and additional features.",
   "repository": {
@@ -32,7 +32,7 @@
     "babel-register": "^6.24.1",
     "babel-resolver": "^1.1.0",
     "babelify": "^7.2.0",
-    "browser-sync": "^2.7.13",
+    "browser-sync": "2.18.13",
     "browserify": "^12.0.1",
     "chai": "^3.5.0",
     "chalk": "^1.1.3",
