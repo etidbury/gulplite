@@ -14,6 +14,9 @@ gulp.task('browserSync', function() {
   browserSync.init({
     server: {
       baseDir: config.buildDir,
+     /* routes: {
+          "/bower_components": "bower_components"
+      },
       middleware: function(req, res, next) {
         const fileHref = url.parse(req.url).href;
 
@@ -22,15 +25,17 @@ gulp.task('browserSync', function() {
         }
 
         return next();
-      }
+      }*/
     },
     port: config.browserPort,
     ui: {
       port: config.UIPort
     },
     ghostMode: {
-      links: false
-    }
+      clicks: false,
+        forms:false
+    },
+
   });
 
 });
