@@ -1,6 +1,6 @@
 {
   "name": "gulplite",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "author": "Edd Tidbury",
   "description": "Gulp configuration for ES6, SASS and additional features.",
   "repository": {
@@ -44,6 +44,7 @@
     "fs-extra": "^4.0.1",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
+    "gulp-changed": "^3.1.0",
     "gulp-eslint": "^2.0.0",
     "gulp-if": "^2.0.0",
     "gulp-imagemin": "^2.3.0",

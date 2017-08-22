@@ -9,6 +9,7 @@ gulp.task('watch', ['browserSync'], function() {
   // Scripts are automatically watched by Watchify inside Browserify task
   gulp.watch(config.sass.src,               ['sass']);
   gulp.watch(config.images.src,               ['imagemin']);
+
   gulp.watch([
       config.sourceDir + '**/*',
       '!'+config.images.src,
@@ -17,6 +18,7 @@ gulp.task('watch', ['browserSync'], function() {
       '!' + config.sourceDir + '**/*.twig',
       '!' + config.sourceDir + '**/[^_]*.*'//ignore files that start with underscore
       ], {interval:1000},['copyMiscRootFiles']);
+
 
   gulp.watch(config.sourceDir + '**/*.twig',['space-cms']);
   gulp.watch([
