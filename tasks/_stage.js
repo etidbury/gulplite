@@ -11,8 +11,8 @@ gulp.task('stage', ['clean'], function(cb) {
     global.isProd = true;
     global.isStage =true;
 
-    runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms'], cb);
-
-    process.exit(0);
+    runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms'], function(){
+        process.exit(0);
+    });
 
 });
