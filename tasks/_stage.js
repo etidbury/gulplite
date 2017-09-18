@@ -13,4 +13,6 @@ gulp.task('stage', ['clean'], function(cb) {
 
     runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms'], cb);
 
+    process.exit(0);
+
 });

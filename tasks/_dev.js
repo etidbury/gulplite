@@ -12,4 +12,5 @@ gulp.task('dev', ['clean'], function(cb) {
   return runSequence(['sass', 'imagemin','browserSync', 'browserify','copyMiscRootFiles','space-cms','sails'], 'watch', cb);
    // runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms'], cb);
 
+
 });

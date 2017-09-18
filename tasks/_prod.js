@@ -1,16 +1,18 @@
 'use strict';
 
-const gulp=require('gulp');
-const runSequence=require('run-sequence');
+const gulp = require('gulp');
+const runSequence = require('run-sequence');
 
 
-gulp.task('prod', ['clean'], function(cb) {
+gulp.task('prod', ['clean'], function (cb) {
 
-  cb = cb || function() {};
+    cb = cb || function () {
+    };
 
-  global.isProd = true;
+    global.isProd = true;
 
-  runSequence(['sass', 'imagemin', 'browserify','copyMiscRootFiles','space-cms'], cb);
+    runSequence(['sass', 'imagemin', 'browserify', 'copyMiscRootFiles', 'space-cms'], cb);
 
+    process.exit(0);
 
 });
