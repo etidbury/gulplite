@@ -7,6 +7,19 @@ console.log("Gulp Lite Directory:",__dirname);//fordebug: debug print
 console.log("Project Directory:",process.cwd());//fordebug: debug print
 console.log("Arguments:",process.argv.slice(2));//fordebug: debug print*/
 
+
+
+/*
+todo: use this method instead...
+// (from sails app.js)
+// Ensure we're in the project directory, so cwd-relative paths work as expected
+// no matter where we actually lift from.
+// > Note: This is not required in order to lift, but it is a convenient default.
+process.chdir(__dirname);
+ */
+
+
+
 const gulpCommands=process.argv.slice(2).length?process.argv.slice(2):['dev'];
 
 if (gulpCommands.includes('-v')||gulpCommands.includes('--version')){
