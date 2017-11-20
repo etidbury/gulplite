@@ -1,11 +1,13 @@
 'use strict';
 //const API_URL = "https://spacecms.com/";
-//const API_URL = "http://localhost:9000/";
-const API_URL = "https://portal.firepit.tech/";
+//const API_URL = "http://localhost:4088/api/v1/";
+const API_URL = "https://portal.firepit.tech/api/v1/";
 //const API_URL = "http://portal.firepit.tech/";
 const GLOBAL_VAR_NAME = "__spacecms_global";
 const DEFAULT_SPACE_UPDATE_COOLDOWN = 50;//ms
-const SPACE_LIB_JS_URL = 'https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.30/index.js';
+//var SPACE_LIB_JS_URL = 'http://localhost:9002/index.js';
+const SPACE_LIB_JS_URL = 'https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.33/index.js';
+
 
 //const SPACE_LIB_JS_URL='http://localhost:9006/index.js';
 
@@ -417,7 +419,11 @@ gulp.task('space-cms', function (cb) {
     //inject js code
     let jsTemplate = "<script>var gn = '" + GLOBAL_VAR_NAME + "';window[gn] = {config: {{ config|json_encode }},space:{{ space|json_encode }},project:{{ project|json_encode }}};window['_space'] = window[gn].space;</script>";
 
+
     if (!isProd || isStage) {
+        jsTemplate +=
+            "<script async>document.addEventListener('DOMContentLoaded',function() {window.document.body.innerHTML+='<div style=\"position:fixed; z-index:10050; width:100%; height:100%; background-color:white; color:black; display:flex; align-items:center; justify-content:center;\" id=\"cms-loading-dialog\">(CMS Dev Mode) Loading page...</div>';});</script>";
+
         jsTemplate +=
             "<script src='" + SPACE_LIB_JS_URL + "'></script>";
 
