@@ -6,7 +6,7 @@ const API_URL = "https://portal.firepit.tech/api/v1/";
 const GLOBAL_VAR_NAME = "__spacecms_global";
 const DEFAULT_SPACE_UPDATE_COOLDOWN = 50;//ms
 //var SPACE_LIB_JS_URL = 'http://localhost:9002/index.js';
-const SPACE_LIB_JS_URL = 'https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.33/index.js';
+const SPACE_LIB_JS_URL = 'https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.34/index.js';
 
 
 //const SPACE_LIB_JS_URL='http://localhost:9006/index.js';
