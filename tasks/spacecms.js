@@ -1,12 +1,12 @@
 'use strict';
 //const API_URL = "https://spacecms.com/";
-const API_URL = "http://localhost:4088/api/v1/";
-//const API_URL = "https://portal.firepit.tech/api/v1/";
+//const API_URL = "http://localhost:4088/api/v1/";
+const API_URL = "https://portal.firepit.tech/api/v1/";
 //const API_URL = "http://portal.firepit.tech/";
 const GLOBAL_VAR_NAME = "__spacecms_global";
 const DEFAULT_SPACE_UPDATE_COOLDOWN = 50;//ms
 //var SPACE_LIB_JS_URL = 'http://localhost:9002/index.js';
-const SPACE_LIB_JS_URL = 'https://cdn.jsdelivr.net/gh/etidbury/spacecms@latest/index.js';
+const SPACE_LIB_JS_URL = 'https://cdn.jsdelivr.net/gh/etidbury/spacecms@v0.0.38/index.js';
 //const SPACE_LIB_JS_URL='http://localhost:9006/index.js';
 const gulp = require('gulp');
 const config = require('../config');
